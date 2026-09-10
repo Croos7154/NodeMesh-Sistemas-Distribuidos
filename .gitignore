@@ -1,0 +1,24 @@
+#Entorno virtual
+venv/
+
+#Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+
+#Variables y configuraciones sensibles
+.env
+
+#Configuracion interna de Postman
+.postman/
+
+#Variables globales locales de Postman
+postman/globals/
+
+#IDE
+.vscode/
+.idea/
+
+#Sistema operativo
+Thumbs.db
+.DS_Store

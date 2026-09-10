@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: http://127.0.0.1:5001/estado
+method: GET
+order: 245228796124523
