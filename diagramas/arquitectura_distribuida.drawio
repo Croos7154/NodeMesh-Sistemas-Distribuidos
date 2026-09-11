@@ -1,0 +1,124 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Arquitectura distribuida">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1600" pageHeight="1000">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t" value="Arquitectura del Sistema Distribuido - NodeMesh"
+          style="text;html=1;align=center;fontSize=28;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="350" y="30" width="900" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c1" value="Cliente 1"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="80" y="180" width="180" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c2" value="Cliente 2"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="1340" y="180" width="180" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c3" value="Cliente 3"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="80" y="650" width="180" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c4" value="Cliente 4"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="1340" y="650" width="180" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a" value="Nodo A&#xa;FastAPI&#xa;Puerto 5001"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="340" y="350" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="b" value="Nodo B&#xa;FastAPI&#xa;Puerto 5002"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="680" y="350" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c" value="Nodo C&#xa;FastAPI&#xa;Puerto 5003"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;fontStyle=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="1020" y="350" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" value="HTTP / JSON"
+          style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;"
+          edge="1" parent="1" source="c1" target="a">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" value="HTTP / JSON"
+          style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;"
+          edge="1" parent="1" source="c3" target="a">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" value="HTTP / JSON"
+          style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;"
+          edge="1" parent="1" source="c2" target="c">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e4" value="HTTP / JSON"
+          style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;"
+          edge="1" parent="1" source="c4" target="c">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ab" value="Replicación&#xa;HTTP/TCP + JSON"
+          style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9673a6;"
+          edge="1" parent="1" source="a" target="b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="bc" value="Replicación&#xa;HTTP/TCP + JSON"
+          style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9673a6;"
+          edge="1" parent="1" source="b" target="c">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ac" value="/health + sincronización"
+          style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9673a6;dashed=1;"
+          edge="1" parent="1" source="a" target="c">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="560"/>
+              <mxPoint x="1140" y="560"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend" value="Flujos principales&#xa;• Cliente → Nodo: HTTP + JSON&#xa;• Nodo ↔ Nodo: replicación y sincronización&#xa;• /health: detección de disponibilidad"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;align=left;verticalAlign=top;spacing=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="330" y="650" width="520" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fault" value="Tolerancia a fallos&#xa;Si un nodo falla:&#xa;• Los demás continúan operando&#xa;• Los clientes pueden conectarse a otro nodo&#xa;• El nodo recuperado podrá sincronizarse"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;align=left;verticalAlign=top;spacing=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="900" y="650" width="390" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="note" value="Cada nodo es un proceso independiente; no se utiliza memoria compartida entre nodos."
+          style="text;html=1;align=center;fontSize=14;fontStyle=2;fontColor=#666666;"
+          vertex="1" parent="1">
+          <mxGeometry x="380" y="850" width="840" height="30" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
