@@ -1,6 +1,8 @@
 import time
 import threading
+import uuid
 
+from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
@@ -15,13 +17,22 @@ inicio_nodo = time.time()
 #Usuarios conectados
 usuarios = {}
 
-#Control de acceso a usuarios
+#Mensajes del nodo
+mensajes = []
+
+#Control de acceso
 lock = threading.Lock()
 
 
 #Modelo de usuario
 class Usuario(BaseModel):
     nombre: str
+
+
+#Modelo de mensaje
+class Mensaje(BaseModel):
+    usuario: str
+    contenido: str
 
 
 #Crear aplicacion FastAPI
@@ -55,17 +66,20 @@ def health():
 #Informacion del nodo
 @app.get("/estado")
 def estado():
+
     tiempo_activo = time.time() - inicio_nodo
 
     with lock:
         total_usuarios = len(usuarios)
+        total_mensajes = len(mensajes)
 
     return {
         "nodo": NODE_ID,
         "puerto": NODE_PORT,
         "estado": "online",
         "tiempo_activo_segundos": round(tiempo_activo, 2),
-        "usuarios_conectados": total_usuarios
+        "usuarios_conectados": total_usuarios,
+        "mensajes_locales": total_mensajes
     }
 
 
@@ -148,4 +162,64 @@ def desconectar_usuario(nombre: str):
         "mensaje": "Usuario desconectado correctamente",
         "usuario": nombre,
         "nodo": NODE_ID
+    }
+
+
+#Enviar mensaje
+@app.post("/mensajes")
+def enviar_mensaje(mensaje: Mensaje):
+
+    usuario = mensaje.usuario.strip()
+    contenido = mensaje.contenido.strip()
+
+    #Validar usuario
+    if not usuario:
+        raise HTTPException(
+            status_code=400,
+            detail="El usuario no puede estar vacio"
+        )
+
+    #Validar contenido
+    if not contenido:
+        raise HTTPException(
+            status_code=400,
+            detail="El mensaje no puede estar vacio"
+        )
+
+    #Comprobar usuario conectado
+    with lock:
+
+        if usuario not in usuarios:
+            raise HTTPException(
+                status_code=404,
+                detail="El usuario no esta conectado"
+            )
+
+        nuevo_mensaje = {
+            "id": str(uuid.uuid4()),
+            "usuario": usuario,
+            "contenido": contenido,
+            "nodo_origen": NODE_ID,
+            "fecha": datetime.now(timezone.utc).isoformat()
+        }
+
+        mensajes.append(nuevo_mensaje)
+
+    return {
+        "mensaje": "Mensaje enviado correctamente",
+        "datos": nuevo_mensaje
+    }
+
+
+#Mostrar mensajes
+@app.get("/mensajes")
+def obtener_mensajes():
+
+    with lock:
+        lista_mensajes = mensajes.copy()
+
+    return {
+        "nodo": NODE_ID,
+        "total": len(lista_mensajes),
+        "mensajes": lista_mensajes
     }

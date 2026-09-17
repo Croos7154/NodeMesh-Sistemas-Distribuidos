@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{NodoA}}/usuarios/JoseM"
+method: DELETE
+order: 4305109768325740

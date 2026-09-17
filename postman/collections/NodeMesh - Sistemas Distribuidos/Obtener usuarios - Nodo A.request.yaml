@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{NodoA}}/usuarios"
+method: GET
+order: 4095874304519525

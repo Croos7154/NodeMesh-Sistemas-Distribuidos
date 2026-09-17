@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: "{{NodoA}}/mensajes"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"usuario\": \"JoseM\",\r
+
+    \    \"contenido\": \"Hola desde el Nodo A\"\r
+
+    }"
+order: 4384898972040112
