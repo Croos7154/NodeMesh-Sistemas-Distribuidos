@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: "{{NodoB}}/mensajes"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"usuario\": \"ClienteB\",\r
+
+    \  \"contenido\": \"Prueba final por ngrok\"\r
+
+    }"
+order: 4502459793127204

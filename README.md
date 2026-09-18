@@ -110,3 +110,51 @@ El Nodo A puede ejecutarse con el siguiente comando:
 ```bash
 uvicorn Main:app --host 0.0.0.0 --port 5001
 ````
+
+## Entregable 2 - Funcionamiento del Primer Nodo
+
+### Objetivo
+
+Comprobar el funcionamiento del primer nodo del proyecto utilizando una arquitectura cliente-servidor.
+
+En esta etapa se trabajó únicamente con el Nodo A, ejecutado mediante FastAPI en el puerto 5001.
+
+Postman fue utilizado como cliente para realizar peticiones HTTP al servidor y verificar el funcionamiento de los diferentes endpoints implementados.
+
+### Nodo implementado
+
+El primer nodo del sistema corresponde al:
+
+- Nodo A
+- Puerto: 5001
+- Framework: FastAPI
+- Servidor ASGI: Uvicorn
+
+El nodo se ejecuta mediante:
+
+```powershell
+python -m uvicorn nodo_a.Main:app --host 0.0.0.0 --port 5001
+```
+
+## Entregable 3 - Conversión a Sistema Distribuido
+
+### Objetivo
+
+Convertir el nodo único desarrollado anteriormente en un sistema distribuido con múltiples nodos independientes capaces de comunicarse y sincronizar mensajes mediante red.
+
+### Nodos implementados
+
+Actualmente el sistema utiliza dos nodos independientes:
+
+- Nodo A: puerto 5001
+- Nodo B: puerto 5002
+
+Cada nodo ejecuta su propia instancia de FastAPI y mantiene su propia memoria para usuarios y mensajes.
+
+### Ejecución de los nodos
+
+Nodo A:
+
+```powershell
+python -m uvicorn nodo_a.Main:app --host 0.0.0.0 --port 5001
+```

@@ -2,3 +2,7 @@ name: NodeMesh Local
 values:
   - key: NodoA
     value: ''
+  - key: NodoB
+    value: ''
+  - key: NodoA_Publico
+    value: ''

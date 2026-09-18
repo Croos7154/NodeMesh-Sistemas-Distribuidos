@@ -1,0 +1,8 @@
+$kind: http-request
+description: ""
+url: "{{NodoB}}/usuarios/conectar"
+method: POST
+body:
+  type: json
+  content: "{\r\n  \"nombre\": \"ClienteB\"\r\n}"
+order: 4501784132317681
