@@ -1,0 +1,6 @@
+$kind: http-request
+name: Comunicación  C -> A y B
+description: ""
+url: "{{NodoC}}/nodo-remoto"
+method: GET
+order: 4503597318118212

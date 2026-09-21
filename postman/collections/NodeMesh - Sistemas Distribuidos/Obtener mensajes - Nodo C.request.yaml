@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{NodoC}}/mensajes"
+method: GET
+order: 4503596910565244

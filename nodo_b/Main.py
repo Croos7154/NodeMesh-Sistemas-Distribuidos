@@ -2,6 +2,7 @@ import time
 import threading
 import uuid
 import requests
+import os
 
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException
@@ -12,9 +13,17 @@ from pydantic import BaseModel
 NODE_ID = "B"
 NODE_PORT = 5002
 
-#Nodo remoto
-PEER_ID = "A"
-PEER_URL = "https://claim-uniformly-remake.ngrok-free.dev"
+#Nodos remotos
+PEERS = {
+    "A": os.getenv(
+        "PEER_A_URL",
+        "http://127.0.0.1:5001"
+    ),
+    "C": os.getenv(
+        "PEER_C_URL",
+        "http://127.0.0.1:5003"
+    )
+}
 
 #Tiempo de inicio
 inicio_nodo = time.time()
@@ -227,29 +236,35 @@ def enviar_mensaje(mensaje: Mensaje):
 
         mensajes.append(nuevo_mensaje)
 
-    #Replicar mensaje al otro nodo
-    replicado = False
+    #Replicar mensaje a los otros nodos
+    replicados = []
+    fallidos = []
 
-    try:
+    for peer_id, peer_url in PEERS.items():
 
-        respuesta = requests.post(
-            f"{PEER_URL}/mensajes/replicar",
-            json=nuevo_mensaje,
-            timeout=3
-        )
+        try:
 
-        if respuesta.status_code == 200:
-            replicado = True
+            respuesta = requests.post(
+                f"{peer_url}/mensajes/replicar",
+                json=nuevo_mensaje,
+                timeout=3
+            )
 
-    except requests.RequestException:
-        replicado = False
+            if respuesta.status_code == 200:
+                replicados.append(peer_id)
+            else:
+                fallidos.append(peer_id)
+
+        except requests.RequestException:
+            fallidos.append(peer_id)
 
     return {
         "mensaje": "Mensaje enviado correctamente",
         "datos": nuevo_mensaje,
-        "replicado": replicado
-    }
-
+        "replicado": len(fallidos) == 0,
+        "replicados": replicados,
+        "fallidos": fallidos
+}
 
 #Mostrar mensajes
 @app.get("/mensajes")
@@ -264,32 +279,40 @@ def obtener_mensajes():
         "mensajes": lista_mensajes
     }
 
-#Comprobar comunicacion con otro nodo
+#Comprobar comunicacion con otros nodos
 @app.get("/nodo-remoto")
 def nodo_remoto():
 
-    try:
+    resultados = []
 
-        respuesta = requests.get(
-            f"{PEER_URL}/health",
-            timeout=3
-        )
+    for peer_id, peer_url in PEERS.items():
 
-        respuesta.raise_for_status()
+        try:
 
-        return {
-            "nodo_local": NODE_ID,
-            "nodo_remoto": PEER_ID,
-            "comunicacion": "correcta",
-            "respuesta": respuesta.json()
-        }
+            respuesta = requests.get(
+                f"{peer_url}/health",
+                timeout=3
+            )
 
-    except requests.RequestException:
+            respuesta.raise_for_status()
 
-        raise HTTPException(
-            status_code=503,
-            detail=f"No se pudo contactar al Nodo {PEER_ID}"
-        )
+            resultados.append({
+                "nodo": peer_id,
+                "estado": "online",
+                "respuesta": respuesta.json()
+            })
+
+        except requests.RequestException:
+
+            resultados.append({
+                "nodo": peer_id,
+                "estado": "offline"
+            })
+
+    return {
+        "nodo_local": NODE_ID,
+        "nodos_remotos": resultados
+    }
 
 #Recibir mensaje replicado
 @app.post("/mensajes/replicar")

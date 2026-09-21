@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: "{{NodoC}}/mensajes"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"usuario\": \"DockerC\",\r
+
+    \    \"contenido\": \"Mensaje distribuido usando Docker Compose\"\r
+
+    }"
+order: 4503597671610366

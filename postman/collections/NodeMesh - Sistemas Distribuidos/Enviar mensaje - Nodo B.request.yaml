@@ -8,7 +8,7 @@ body:
 
     \  \"usuario\": \"ClienteB\",\r
 
-    \  \"contenido\": \"Prueba final por ngrok\"\r
+    \  \"contenido\": \"Mensaje distribuido entre A B y C\"\r
 
     }"
-order: 4502459793127204
+order: 4495239882147244

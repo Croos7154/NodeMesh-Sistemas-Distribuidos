@@ -1,0 +1,8 @@
+$kind: http-request
+description: ""
+url: "{{NodoC}}/usuarios/conectar"
+method: POST
+body:
+  type: json
+  content: "{\r\n    \"nombre\": \"DockerC\"\r\n}"
+order: 4503596516138721

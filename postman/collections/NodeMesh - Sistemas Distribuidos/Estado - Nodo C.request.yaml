@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{NodoC}}/estado"
+method: GET
+order: 4503596240099780

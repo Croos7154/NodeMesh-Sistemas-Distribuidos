@@ -4,5 +4,7 @@ values:
     value: ''
   - key: NodoB
     value: ''
+  - key: NodoC
+    value: ''
   - key: NodoA_Publico
     value: ''

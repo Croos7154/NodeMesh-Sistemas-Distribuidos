@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{NodoC}}/health"
+method: GET
+order: 4503577652097557

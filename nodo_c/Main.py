@@ -10,18 +10,18 @@ from pydantic import BaseModel
 
 
 #Configuracion del nodo
-NODE_ID = "A"
-NODE_PORT = 5001
+NODE_ID = "C"
+NODE_PORT = 5003
 
 #Nodos remotos
 PEERS = {
+    "A": os.getenv(
+        "PEER_A_URL",
+        "http://127.0.0.1:5001"
+    ),
     "B": os.getenv(
         "PEER_B_URL",
         "http://127.0.0.1:5002"
-    ),
-    "C": os.getenv(
-        "PEER_C_URL",
-        "http://127.0.0.1:5003"
     )
 }
 
@@ -59,7 +59,7 @@ class MensajeReplicado(BaseModel):
 
 #Crear aplicacion FastAPI
 app = FastAPI(
-    title="NodeMesh - Nodo A",
+    title="NodeMesh - Nodo C",
     description="Nodo del proyecto de Sistemas Distribuidos",
     version="1.0"
 )
@@ -71,7 +71,7 @@ def inicio():
     return {
         "proyecto": "NodeMesh",
         "nodo": NODE_ID,
-        "mensaje": "Nodo A funcionando"
+        "mensaje": "Nodo C funcionando"
     }
 
 
@@ -186,7 +186,6 @@ def desconectar_usuario(nombre: str):
         "nodo": NODE_ID
     }
 
-
 #Comprobar si un mensaje ya existe
 def mensaje_existe(id_mensaje):
 
@@ -196,7 +195,6 @@ def mensaje_existe(id_mensaje):
             return True
 
     return False
-
 
 #Enviar mensaje
 @app.post("/mensajes")
@@ -267,6 +265,19 @@ def enviar_mensaje(mensaje: Mensaje):
         "replicados": replicados,
         "fallidos": fallidos
 }
+
+#Mostrar mensajes
+@app.get("/mensajes")
+def obtener_mensajes():
+
+    with lock:
+        lista_mensajes = mensajes.copy()
+
+    return {
+        "nodo": NODE_ID,
+        "total": len(lista_mensajes),
+        "mensajes": lista_mensajes
+    }
 
 #Mostrar mensajes
 @app.get("/mensajes")

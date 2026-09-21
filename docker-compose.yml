@@ -1,0 +1,68 @@
+services:
+
+  nodo-a:
+    build: .
+    container_name: nodemesh-a
+    restart: unless-stopped
+    command:
+      - python
+      - -m
+      - uvicorn
+      - nodo_a.Main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5001"
+    ports:
+      - "5001:5001"
+    environment:
+      PEER_B_URL: http://nodo-b:5002
+      PEER_C_URL: http://nodo-c:5003
+    networks:
+      - nodemesh-red
+
+  nodo-b:
+    build: .
+    container_name: nodemesh-b
+    restart: unless-stopped
+    command:
+      - python
+      - -m
+      - uvicorn
+      - nodo_b.Main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5002"
+    ports:
+      - "5002:5002"
+    environment:
+      PEER_A_URL: http://nodo-a:5001
+      PEER_C_URL: http://nodo-c:5003
+    networks:
+      - nodemesh-red
+
+  nodo-c:
+    build: .
+    container_name: nodemesh-c
+    restart: unless-stopped
+    command:
+      - python
+      - -m
+      - uvicorn
+      - nodo_c.Main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5003"
+    ports:
+      - "5003:5003"
+    environment:
+      PEER_A_URL: http://nodo-a:5001
+      PEER_B_URL: http://nodo-b:5002
+    networks:
+      - nodemesh-red
+
+networks:
+  nodemesh-red:
+    driver: bridge
