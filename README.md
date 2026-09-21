@@ -8,7 +8,7 @@
 
 El proyecto parte de un chat cliente-servidor desarrollado anteriormente y evoluciona hacia una arquitectura compuesta por múltiples nodos independientes capaces de comunicarse mediante red, replicar mensajes, detectar fallos y mantener la continuidad del servicio cuando uno de los nodos deja de responder.
 
-La versión final del sistema utiliza **tres nodos FastAPI**, un cliente de terminal, replicación de mensajes, tolerancia a fallos, cambio manual de nodo, Docker Compose, Postman y ngrok.
+La versión final del sistema utiliza **tres nodos FastAPI** ejecutados mediante Docker Compose, un cliente de terminal desarrollado con Rich, replicación de mensajes, tolerancia a fallos, cambio manual de nodo y soporte para conexiones desde otros dispositivos dentro de la misma red local.
 
 ---
 
@@ -596,12 +596,46 @@ NodeMesh incluye un cliente interactivo ubicado en:
 cliente/cliente.py
 ```
 
-El cliente utiliza la biblioteca **Rich** para ofrecer una interfaz de terminal más clara.
+El cliente utiliza la biblioteca **Rich** para ofrecer una interfaz de terminal más clara y organizada.
 
-Al iniciar se muestra:
+Al iniciar, el cliente solicita la dirección IP del equipo que está ejecutando los nodos de NodeMesh:
+
+```text
+IP del servidor NodeMesh (127.0.0.1):
+```
+
+Si el cliente se ejecuta en la misma computadora donde se encuentra Docker, se puede presionar `Enter` para utilizar la dirección predeterminada:
+
+```text
+127.0.0.1
+```
+
+Si el cliente se ejecuta desde otro dispositivo conectado a la misma red local, se debe ingresar la dirección IPv4 de la computadora que ejecuta los nodos.
+
+Ejemplo:
+
+```text
+IP del servidor NodeMesh (127.0.0.1): 192.168.0.23
+```
+
+A partir de esta dirección, el cliente configura automáticamente las rutas de los tres nodos:
+
+```text
+Nodo A → http://<IP_SERVIDOR>:5001
+Nodo B → http://<IP_SERVIDOR>:5002
+Nodo C → http://<IP_SERVIDOR>:5003
+```
+
+Después de configurar la dirección del servidor, el usuario puede seleccionar cualquiera de los nodos disponibles:
+
+```text
+Selecciona un nodo [A/B/C]:
+```
+
+Una vez conectado, la interfaz muestra:
 
 - nombre del proyecto;
-- estado de A, B y C;
+- estado de los nodos A, B y C;
 - puerto de cada nodo;
 - nodo actual;
 - usuario conectado;
@@ -615,7 +649,7 @@ Sistema de Chat Distribuido
 FastAPI • Docker • Python
 ```
 
-El estado de red se muestra mediante una tabla:
+El estado de la red se muestra mediante una tabla:
 
 ```text
 Nodo     Estado      Puerto     Actual
@@ -625,13 +659,25 @@ B        ONLINE      5002
 C        ONLINE      5003
 ```
 
-Los nodos utilizan colores diferentes:
+Los nodos utilizan colores diferentes dentro de la interfaz:
 
 ```text
 Nodo A → Cyan
 Nodo B → Magenta
 Nodo C → Verde
 ```
+
+La sesión activa también muestra información del usuario y del nodo utilizado:
+
+```text
+SESION ACTIVA
+
+Usuario       Croos
+Nodo actual   A
+Estado        ● CONECTADO
+```
+
+Gracias a la configuración dinámica de la dirección IP, el cliente puede utilizarse tanto de manera local como desde otros equipos conectados a la misma red, sin necesidad de modificar manualmente el código.
 
 ---
 

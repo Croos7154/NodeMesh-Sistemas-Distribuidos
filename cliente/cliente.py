@@ -11,17 +11,33 @@ from rich.markup import escape
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
+from rich.prompt import Prompt
 
 
 #Consola Rich
 console = Console()
 
 #Nodos disponibles
-NODOS = {
-    "A": "http://127.0.0.1:5001",
-    "B": "http://127.0.0.1:5002",
-    "C": "http://127.0.0.1:5003"
-}
+NODOS = {}
+
+
+#Configurar direccion del servidor
+def configurar_nodos():
+    ip_servidor = Prompt.ask(
+        "IP del servidor NodeMesh",
+        default="127.0.0.1"
+    ).strip()
+
+    #Eliminar protocolo si fue escrito
+    ip_servidor = ip_servidor.replace("http://", "")
+    ip_servidor = ip_servidor.replace("https://", "")
+    ip_servidor = ip_servidor.rstrip("/")
+
+    return {
+        "A": f"http://{ip_servidor}:5001",
+        "B": f"http://{ip_servidor}:5002",
+        "C": f"http://{ip_servidor}:5003"
+    }
 
 #Colores de los nodos
 COLORES_NODO = {
@@ -740,9 +756,13 @@ def main():
     global nodo_actual
     global url_actual
     global usuario_actual
+    global NODOS
 
     limpiar()
     mostrar_banner()
+
+    #Configurar servidor
+    NODOS = configurar_nodos()
 
     nodo_actual, url_actual = seleccionar_nodo()
 
