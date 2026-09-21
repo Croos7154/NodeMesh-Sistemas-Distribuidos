@@ -122,6 +122,57 @@ def mostrar_nodos():
     console.print(tabla)
 
 
+#Mostrar sesion actual
+def mostrar_sesion():
+    color = COLORES_NODO.get(
+        nodo_actual,
+        "white"
+    )
+
+    tabla = Table(
+        box=None,
+        show_header=False,
+        padding=(0, 1)
+    )
+
+    tabla.add_column(
+        style="bold cyan"
+    )
+
+    tabla.add_column()
+
+    tabla.add_row(
+        "Usuario",
+        str(usuario_actual)
+    )
+
+    tabla.add_row(
+        "Nodo actual",
+        Text(
+            str(nodo_actual),
+            style=f"bold {color}"
+        )
+    )
+
+    tabla.add_row(
+        "Estado",
+        Text(
+            "● CONECTADO",
+            style="bold green"
+        )
+    )
+
+    console.print()
+    console.print(
+        Panel(
+            tabla,
+            title="SESION ACTIVA",
+            border_style=color,
+            expand=False
+        )
+    )
+
+
 #Mostrar ayuda
 def mostrar_ayuda():
     tabla = Table(
@@ -139,6 +190,7 @@ def mostrar_ayuda():
     tabla.add_row("/clear", "Limpiar la terminal")
     tabla.add_row("/ayuda", "Mostrar los comandos disponibles")
     tabla.add_row("/salir", "Cerrar el cliente")
+    tabla.add_row("/nodo A|B|C", "Cambiar manualmente de nodo")
 
     console.print()
     console.print(tabla)
@@ -215,7 +267,17 @@ def mostrar_mensaje_chat(mensaje):
 
     encabezado = Text()
     encabezado.append(f"[{nodo}] ", style=f"bold {color}")
-    encabezado.append(usuario, style="bold white")
+
+    if usuario == usuario_actual:
+        encabezado.append(
+            usuario,
+            style="bold bright_white"
+        )
+    else:
+        encabezado.append(
+            usuario,
+            style="white"
+        )
 
     if fecha:
         encabezado.append(f"    {fecha}", style="dim")
@@ -261,6 +323,95 @@ def buscar_nodo_disponible(nodo_anterior):
 
     return None, None
 
+
+#Cambiar de nodo manualmente
+def cambiar_nodo_manual(nuevo_nodo):
+    global nodo_actual
+    global url_actual
+    global usuario_actual
+
+    nuevo_nodo = nuevo_nodo.upper()
+
+    #Validar nodo
+    if nuevo_nodo not in NODOS:
+        mostrar_error(
+            "Nodo no valido. Usa A, B o C"
+        )
+        return False
+
+    #Comprobar si ya estamos en ese nodo
+    if nuevo_nodo == nodo_actual:
+        console.print(
+            f"[yellow]Ya estas conectado al Nodo "
+            f"{nuevo_nodo}[/yellow]"
+        )
+        return False
+
+    nueva_url = NODOS[nuevo_nodo]
+
+    #Comprobar disponibilidad
+    if not consultar_estado_nodo(nueva_url):
+        mostrar_error(
+            f"El Nodo {nuevo_nodo} no esta disponible"
+        )
+        return False
+
+    with lock_nodo:
+        nodo_anterior = nodo_actual
+        url_anterior = url_actual
+
+        try:
+            #Registrar usuario en el nuevo nodo
+            respuesta = requests.post(
+                f"{nueva_url}/usuarios/conectar",
+                json={
+                    "nombre": usuario_actual
+                },
+                timeout=3
+            )
+
+            if respuesta.status_code not in [200, 409]:
+                mostrar_error(
+                    f"No se pudo conectar al Nodo {nuevo_nodo}"
+                )
+                return False
+
+            #Cambiar nodo actual
+            nodo_actual = nuevo_nodo
+            url_actual = nueva_url
+
+            #Desconectar del nodo anterior
+            try:
+                requests.delete(
+                    f"{url_anterior}/usuarios/{usuario_actual}",
+                    timeout=3
+                )
+            except requests.RequestException:
+                pass
+
+            console.print()
+            console.print(
+                Panel(
+                    f"Nodo {nodo_anterior}  ->  Nodo {nuevo_nodo}\n"
+                    "Cambio realizado correctamente",
+                    title="CAMBIO DE NODO",
+                    border_style=COLORES_NODO.get(
+                        nuevo_nodo,
+                        "cyan"
+                    ),
+                    expand=False
+                )
+            )
+
+            mostrar_sesion()
+
+            return True
+
+        except requests.RequestException:
+            mostrar_error(
+                f"No se pudo conectar al Nodo {nuevo_nodo}"
+            )
+            return False
 
 #Cambiar automaticamente de nodo
 def cambiar_nodo(nodo_fallido):
@@ -612,6 +763,8 @@ def main():
         url_actual
     )
 
+    mostrar_sesion()
+
     usuario = usuario_actual
 
     hilo_mensajes = threading.Thread(
@@ -656,10 +809,23 @@ def main():
             elif contenido == "/estado":
                 mostrar_nodos()
 
+            elif contenido.startswith("/nodo"):
+                partes = contenido.split()
+
+                if len(partes) != 2:
+                    mostrar_error(
+                        "Uso correcto: /nodo A, /nodo B o /nodo C"
+                    )
+                else:
+                    cambiar_nodo_manual(
+                        partes[1]
+                    )
+
             elif contenido == "/clear":
                 limpiar()
                 mostrar_banner()
                 mostrar_nodos()
+                mostrar_sesion()
 
             elif contenido == "/ayuda":
                 mostrar_ayuda()
